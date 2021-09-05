@@ -12,11 +12,10 @@ class Player(BaseModel):
 
 
 class Game(BaseModel):
-    game_id: int
     players: List[Player]
     movements_played: int
     next_turn: str
-    board: List[list] = [[None, None, None], [None, None, None], [None, None, None]]
+    board: str = '[[None, None, None], [None, None, None], [None, None, None]]'
     winner: Optional[str] = None
 
     class Config:

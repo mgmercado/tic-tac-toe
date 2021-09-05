@@ -8,6 +8,7 @@ from api.src.routers import router
 app = FastAPI()
 
 app.include_router(router.router)
+Base.metadata.drop_all(bind=database.engine)
 Base.metadata.create_all(bind=database.engine)
 
 if __name__ == "__main__":

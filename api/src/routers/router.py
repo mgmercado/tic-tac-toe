@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from api.src.db.database import get_db
 from api.src.entities.requests import GameRequest
 from api.src.entities.responses import GameResponse
-from api.src.entities.schemas import Player
+from api.src.entities.schemas import Player, Game
 from api.src.services import game_service, player_services
 
 router = APIRouter()
@@ -17,9 +17,9 @@ async def ping() -> dict:
     return {'message': 'pong!'}
 
 
-@router.post('/new_game', response_model=GameResponse)
-async def new_game(game_request: GameRequest):
-    return game_service.begin_game(game_request)
+@router.post('/new_game', response_model=Game)
+async def new_game(game_request: GameRequest, db: Session = Depends(get_db)):
+    return game_service.begin_game(db, game_request)
 
 
 @router.get('/players', response_model=List[Player], status_code=200)

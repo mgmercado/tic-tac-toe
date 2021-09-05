@@ -1,20 +1,33 @@
 from typing import List
 
-from api.src.entities.schemas import Player
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
+from api.src.db import crud
 from api.src.entities.requests import GameRequest
+from api.src.entities.schemas import Player, Game
+
+# db = SessionLocal()
+from api.src.services import player_services
 
 
-def begin_game(game_request: GameRequest) -> dict:
-    players = _validate_symbol(game_request.players)
-    next_turn = game_request.players[0].name
-    board = [[None, None, None], [None, None, None], [None, None, None]]
-
-    return {'game_id': 0, 'players': players, 'movements_played': 0, 'next_turn': next_turn, 'board': board}
+def get_all_games(db: Session, skip: int = 0, limit: int = 100) -> List[Game]:
+    return crud.get_games(db, skip, limit)
 
 
-def _validate_symbol(players: List[Player]) -> List[Player]:
-    symbols = ('X', 'O')
-    for player in players:
-        player.symbol = symbols[players.index(player)] if not player.symbol else player.symbol
+def get_game(db, game_id: int):
+    player = crud.get_game(db, game_id)
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return player
 
-    return players
+
+def create_game(db: Session, new_game: Game):
+    return crud.create_game(db, new_game)
+
+
+def begin_game(db: Session, game_request: GameRequest) -> dict:
+    players = player_services.validate_symbol(game_request.players)
+    next_turn = players[0].name
+    new_game = Game(**{'players': players, 'movements_played': 0, 'next_turn': next_turn})
+    return create_game(db, new_game)

@@ -1,13 +1,10 @@
 from typing import List
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from api.src.db import models, crud
-from api.src.db.database import SessionLocal
+from api.src.db import crud
 from api.src.entities.schemas import Player
-
-
-# db = SessionLocal()
 
 
 def get_all_players(db: Session, skip: int = 0, limit: int = 100) -> List[Player]:
@@ -15,14 +12,17 @@ def get_all_players(db: Session, skip: int = 0, limit: int = 100) -> List[Player
 
 
 def get_player(db, player_id: int):
-    return crud.get_player(db, player_id)
+    player = crud.get_player(db, player_id)
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return player
 
 
 def add_player(db: Session, new_player: Player):
-    return crud.add_player(db, new_player)
+    return crud.create_player(db, new_player)
 
 
-def _validate_symbol(players: List[Player]):
+def validate_symbol(players: List[Player]):
     symbols = ('X', 'O')
     for player in players:
         player.symbol = symbols[players.index(player)] if not player.symbol else player.symbol
