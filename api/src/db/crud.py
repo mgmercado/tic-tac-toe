@@ -32,18 +32,18 @@ def _get_entities(db: Session, model: Base, skip: int, limit: int) -> List[Base]
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def _create_entity(db: Session, new_entity: Game, model: Base) -> Base:
-    print(new_entity.dict())
+def create_game(db: Session, new_game: Game) -> Base:
+    new_game.players = [PlayerDB(**player.dict()) for player in new_game.players]
+    return _create_entity(db, new_game, GameDB)
+
+
+def _create_entity(db: Session, new_entity: BaseModel, model: Base) -> Base:
     entity_db = model(**new_entity.dict())
     db.add(entity_db)
     db.commit()
     db.refresh(entity_db)
 
     return entity_db
-
-
-def create_game(db: Session, new_game: Game) -> Base:
-    return _create_entity(db, new_game, GameDB)
 
 
 def get_games(db: Session, skip: int, limit: int):
