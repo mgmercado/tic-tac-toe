@@ -28,6 +28,9 @@ def create_game(db: Session, new_game: Game):
 
 def begin_game(db: Session, game_request: GameRequest) -> dict:
     players = player_services.validate_symbol(game_request.players)
-    next_turn = players[0].name
+    players_names = [player.name for player in players]
+    next_turn = game_request.starting_player if game_request.starting_player \
+                                                and game_request.starting_player in players_names \
+                                            else players_names[0]
     new_game = Game(**{'players': players, 'movements_played': 0, 'next_turn': next_turn})
     return create_game(db, new_game)

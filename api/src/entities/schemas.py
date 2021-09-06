@@ -6,7 +6,6 @@ from pydantic import BaseModel
 class Player(BaseModel):
     name: str
     symbol: Optional[str] = None
-    game_id: Optional[int] = None
 
     class Config:
         orm_mode = True
