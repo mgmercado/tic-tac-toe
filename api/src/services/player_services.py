@@ -18,6 +18,13 @@ def get_player(db, player_id: int):
     return player
 
 
+def get_player_by_name(db, player_name: str):
+    player = crud.get_player_by_name(db, player_name)
+    if not player:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return player
+
+
 def add_player(db: Session, new_player: Player):
     return crud.create_player(db, new_player)
 

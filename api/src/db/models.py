@@ -12,8 +12,7 @@ class PlayerDB(Base):
     symbol = Column(CHAR, nullable=False)
     game_id = Column(Integer, ForeignKey('game.id'))
 
-    def __repr__(self):
-        return f"<Player name= {self.name} symbol={self.symbol}>"
+    plays = relationship('PlayDB')
 
 
 class GameDB(Base):
@@ -25,3 +24,13 @@ class GameDB(Base):
     winner = Column(String(50))
 
     players = relationship('PlayerDB')
+    plays = relationship('PlayDB')
+
+
+class PlayDB(Base):
+    __tablename__ = 'play'
+    id = Column(Integer, primary_key=True)
+    game_id = Column(Integer, ForeignKey('game.id'))
+    player_id = Column(Integer, ForeignKey('player.id'))
+    row = Column(Integer, nullable=False)
+    column = Column(Integer, nullable=False)

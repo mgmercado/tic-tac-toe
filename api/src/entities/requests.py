@@ -8,3 +8,8 @@ class GameRequest(BaseModel):
     starting_player: Optional[str] = None
 
 
+class SubmitPlay(BaseModel):
+    game_id: int
+    player_name: str
+    row: int
+    column: int

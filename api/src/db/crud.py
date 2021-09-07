@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from api.src.db.database import Base
-from api.src.db.models import PlayerDB, GameDB
-from api.src.entities.schemas import Player, Game
+from api.src.db.models import PlayerDB, GameDB, PlayDB
+from api.src.entities.schemas import Player, Game, Play
 
 
 def get_player(db: Session, player_id: int) -> PlayerDB:
@@ -37,13 +37,20 @@ def create_game(db: Session, new_game: Game) -> Base:
     return _create_entity(db, new_game, GameDB)
 
 
+def create_play(db: Session, new_play: Play) -> Base:
+    return _create_entity(db, new_play, PlayDB)
+
+
 def _create_entity(db: Session, new_entity: BaseModel, model: Base) -> Base:
     entity_db = model(**new_entity.dict())
-    db.add(entity_db)
-    db.commit()
-    db.refresh(entity_db)
+    _add_commit(db, entity_db)
 
     return entity_db
+
+
+def _add_commit(db: Session, entity_db: Base):
+    db.add(entity_db)
+    db.commit()
 
 
 def get_games(db: Session, skip: int, limit: int):
@@ -52,3 +59,9 @@ def get_games(db: Session, skip: int, limit: int):
 
 def get_game(db: Session, game_id: int):
     return _get_entity(db, GameDB, game_id)
+
+
+def update_game(db: Session, updated_game: GameDB):
+    _add_commit(db, updated_game)
+
+    return updated_game
