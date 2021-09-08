@@ -1,12 +1,12 @@
 import json
-from typing import List
+from typing import List, Optional
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from api.src.db import crud
 from api.src.entities.requests import GameRequest, SubmitPlay
-from api.src.entities.schemas import Game, Play
+from api.src.entities.schemas import Game, Play, Player
 from api.src.services import player_services
 
 
@@ -34,13 +34,51 @@ def begin_game(db: Session, game_request: GameRequest) -> dict:
     return create_game(db, new_game)
 
 
-def sumbit_play(db: Session, submit_play: SubmitPlay):
+def sumbit_play(db: Session, submit_play: SubmitPlay) -> Game:
     game = get_game(db, submit_play.game_id)
     player = player_services.get_player_by_name(db, submit_play.player_name)
-    board = json.loads(game.board)
-    board[submit_play.row - 1][submit_play.column - 1] = player.symbol
-    game.board = json.dumps(board)
-    new_play = Play(
-        **{'game_id': game.id, 'player_id': player.id, 'row': submit_play.row, 'column': submit_play.column})
+    game.board = _board_play(game.board, player.symbol, submit_play.row, submit_play.column)
+    game.movements_played += 1
+    new_play = Play(**{'game_id': game.id,
+                       'player_id': player.id,
+                       'row': submit_play.row,
+                       'column': submit_play.column})
     crud.create_play(db, new_play)
     crud.update_game(db, game)
+    game.winner = _check_winner(game)
+    return game
+
+
+def _board_play(board: str, symbol: str, row: int, column: int) -> str:
+    board = json.loads(board)
+    board[row - 1][column - 1] = symbol
+    return json.dumps(board)
+
+
+def _check_winner(game: Game) -> Optional[str]:
+    board = json.loads(game.board)
+    flatboard = _flatten(board)
+
+    for player in game.players:
+        if flatboard[0] == flatboard[1] == flatboard[2] == player.symbol:
+            return player.name
+        if flatboard[0] == flatboard[3] == flatboard[6] == player.symbol:
+            return player.name
+        if flatboard[0] == flatboard[4] == flatboard[8] == player.symbol:
+            return player.name
+        if flatboard[1] == flatboard[4] == flatboard[7] == player.symbol:
+            return player.name
+        if flatboard[2] == flatboard[4] == flatboard[6] == player.symbol:
+            return player.name
+        if flatboard[2] == flatboard[5] == flatboard[8] == player.symbol:
+            return player.name
+        if flatboard[3] == flatboard[4] == flatboard[5] == player.symbol:
+            return player.name
+        if flatboard[6] == flatboard[7] == flatboard[8] == player.symbol:
+            return player.name
+
+    return None
+
+
+def _flatten(nested_list: list) -> list:
+    return [item for sublist in nested_list for item in sublist]

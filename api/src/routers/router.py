@@ -46,6 +46,6 @@ async def delete_player(player_id):
     pass
 
 
-@router.post('/submit-play')
+@router.post('/submit-play', response_model=Game, status_code=200)
 async def submit_play(submit_play: SubmitPlay, db: Session = Depends(get_db)):
     return game_service.sumbit_play(db, submit_play)
