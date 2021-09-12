@@ -14,18 +14,18 @@ def get_all_games(db: Session, skip: int = 0, limit: int = 100) -> List[Game]:
     return crud.get_games(db, skip, limit)
 
 
-def get_game(db, game_id: int):
+def get_game(db, game_id: int) -> Game:
     game = crud.get_game(db, game_id)
     if not game:
         raise HTTPException(status_code=404, detail="Game not found")
     return game
 
 
-def create_game(db: Session, new_game: Game):
+def _create_game(db: Session, new_game: Game) -> Game:
     return crud.create_game(db, new_game)
 
 
-def begin_game(db: Session, game_request: GameRequest) -> dict:
+def begin_game(db: Session, game_request: GameRequest) -> Game:
     players = player_services.validate_symbol(game_request.players)
     players_names = [player.name for player in players]
     next_turn = game_request.starting_player if game_request.starting_player \
@@ -33,7 +33,7 @@ def begin_game(db: Session, game_request: GameRequest) -> dict:
     new_game = Game(**{'players': players,
                        'movements_played': 0,
                        'next_turn': next_turn})
-    return create_game(db, new_game)
+    return _create_game(db, new_game)
 
 
 def sumbit_play(db: Session, submit_play: SubmitPlay) -> Game:
@@ -56,7 +56,7 @@ def _submit_play_validations(game: Game, submit_play: SubmitPlay):
         raise HTTPException(status_code=406, detail="Not player's turn")
 
     board = json.loads(game.board)
-    if board[submit_play.row-1][submit_play.column-1] is not None:
+    if board[submit_play.row - 1][submit_play.column - 1] is not None:
         raise HTTPException(status_code=406, detail="Movement already made")
 
 
