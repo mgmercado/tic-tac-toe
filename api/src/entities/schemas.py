@@ -1,11 +1,11 @@
 from typing import Optional, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 
 
 class Player(BaseModel):
     name: str
-    symbol: Optional[str] = None
+    symbol: Optional[constr(max_length=1)] = None
 
     class Config:
         orm_mode = True

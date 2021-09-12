@@ -1,5 +1,5 @@
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, PositiveInt, Field
 from api.src.entities.schemas import Player
 
 
@@ -11,5 +11,5 @@ class GameRequest(BaseModel):
 class SubmitPlay(BaseModel):
     game_id: int
     player_name: str
-    row: int
-    column: int
+    row: int = Field(gt=0, lt=4)
+    column: int = Field(gt=0, lt=4)

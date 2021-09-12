@@ -30,13 +30,43 @@ def begin_game(db: Session, game_request: GameRequest) -> dict:
     players_names = [player.name for player in players]
     next_turn = game_request.starting_player if game_request.starting_player \
                                                 and game_request.starting_player in players_names else players_names[0]
-    new_game = Game(**{'players': players, 'movements_played': 0, 'next_turn': next_turn})
+    new_game = Game(**{'players': players,
+                       'movements_played': 0,
+                       'next_turn': next_turn})
     return create_game(db, new_game)
 
 
 def sumbit_play(db: Session, submit_play: SubmitPlay) -> Game:
     game = get_game(db, submit_play.game_id)
+    _submit_play_validations(game, submit_play)
     player = player_services.get_player_by_name(db, submit_play.player_name)
+    _new_play(db, game, submit_play, player)
+    game.next_turn = _next_turn(game, player)
+    if game.movements_played >= 5 and _check_winner(game):
+        game.winner = _check_winner(game)
+
+    return crud.update_game(db, game)
+
+
+def _submit_play_validations(game: Game, submit_play: SubmitPlay):
+    if game.winner or game.movements_played is 9:
+        raise HTTPException(status_code=406, detail="Game Finished")
+
+    if game.next_turn != submit_play.player_name:
+        raise HTTPException(status_code=406, detail="Not player's turn")
+
+    board = json.loads(game.board)
+    if board[submit_play.row-1][submit_play.column-1] is not None:
+        raise HTTPException(status_code=406, detail="Movement already made")
+
+
+def _board_play(board: str, symbol: str, row: int, column: int) -> str:
+    board = json.loads(board)
+    board[row - 1][column - 1] = symbol
+    return json.dumps(board)
+
+
+def _new_play(db: Session, game: Game, submit_play: SubmitPlay, player: Player):
     game.board = _board_play(game.board, player.symbol, submit_play.row, submit_play.column)
     game.movements_played += 1
     new_play = Play(**{'game_id': game.id,
@@ -44,15 +74,11 @@ def sumbit_play(db: Session, submit_play: SubmitPlay) -> Game:
                        'row': submit_play.row,
                        'column': submit_play.column})
     crud.create_play(db, new_play)
-    crud.update_game(db, game)
-    game.winner = _check_winner(game)
-    return game
 
 
-def _board_play(board: str, symbol: str, row: int, column: int) -> str:
-    board = json.loads(board)
-    board[row - 1][column - 1] = symbol
-    return json.dumps(board)
+def _next_turn(game: Game, player: Player) -> str:
+    next_player = list(set(game.players) - {player})
+    return next_player[0].name
 
 
 def _check_winner(game: Game) -> Optional[str]:
