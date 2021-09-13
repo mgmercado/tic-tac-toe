@@ -9,14 +9,36 @@ from api.src.entities.schemas import Player, Game, Play
 
 
 def _get_entity(db: Session, model: Base, entity_id: int) -> Base:
+    """
+    Private function to encapsulate get entity's logic
+    :param db: database session
+    :param model: database model to cast
+    :param entity_id: entity's id to look
+    :return: entity found
+    """
     return db.query(model).filter(model.id == entity_id).first()
 
 
 def _get_entities(db: Session, model: Base, skip: int, limit: int) -> List[Base]:
+    """
+    Private function to encapsulate get entities' logic
+    :param db: database session
+    :param model: database model to cast
+    :param skip: lower limit
+    :param limit: max limit
+    :return: list of entities
+    """
     return db.query(model).offset(skip).limit(limit).all()
 
 
 def _create_entity(db: Session, new_entity: BaseModel, model: Base) -> Base:
+    """
+    Private function to encapsulate entities storage
+    :param db: database session
+    :param new_entity: new entity to store
+    :param model: entity's model to cast
+    :return: stored entity
+    """
     entity_db = model(**new_entity.dict())
     _add_commit(db, entity_db)
 
@@ -24,44 +46,106 @@ def _create_entity(db: Session, new_entity: BaseModel, model: Base) -> Base:
 
 
 def get_player(db: Session, player_id: int) -> PlayerDB:
+    """
+    Get player from database by id
+    :param db: database session
+    :param player_id: player's id to get
+    :return: player found
+    """
     return _get_entity(db, PlayerDB, player_id)
 
 
 def get_player_by_name(db: Session, name: str) -> PlayerDB:
+    """
+    Get player from database by name
+    :param db: database session
+    :param name: player's name to get
+    :return: player found
+    """
     return db.query(PlayerDB).filter(PlayerDB.name == name).first()
 
 
 def get_players(db: Session, skip: int = 0, limit: int = 100) -> List[PlayerDB]:
+    """
+    Returns all saved players from 0 to 100 by default
+    :param db: database session
+    :param skip: lower limit
+    :param limit: max limit
+    :return: list of players
+    """
     return _get_entities(db, PlayerDB, skip, limit)
 
 
 def create_player(db: Session, new_player: Player) -> PlayerDB:
+    """
+    Stores a new player
+    :param db: database session
+    :param new_player: new player to store
+    :return: stored new player
+    """
     return _create_entity(db, new_player, PlayerDB)
 
 
 def create_game(db: Session, new_game: Game) -> GameDB:
+    """
+    Stores a new game
+    :param db: database session
+    :param new_game: new game to store
+    :return: stored new game
+    """
     new_game.players = [PlayerDB(**player.dict()) for player in new_game.players]
     return _create_entity(db, new_game, GameDB)
 
 
 def create_play(db: Session, new_play: Play) -> PlayDB:
+    """
+    Stores a new play
+    :param db: database session
+    :param new_play: new play to store
+    :return: stored new play
+    """
     return _create_entity(db, new_play, PlayDB)
 
 
 def _add_commit(db: Session, entity_db: Base):
+    """
+    Private function to encapsulate database add and commit
+    :param db: database session
+    :param entity_db: entity to be stored
+    """
     db.add(entity_db)
     db.commit()
 
 
 def get_games(db: Session, skip: int, limit: int) -> List[GameDB]:
+    """
+    Returns all saved games from 0 to 100 by default
+    :param db: database session
+    :param skip: lower limit
+    :param limit: max limit
+    :return: list of games
+    """
     return _get_entities(db, GameDB, skip, limit)
 
 
 def get_game(db: Session, game_id: int) -> GameDB:
+    """
+    Returns game with the requested id
+    :param db: database session
+    :param game_id: id of the game to find
+    :return: game found
+    """
     return _get_entity(db, GameDB, game_id)
 
 
 def update_game(db: Session, updated_game: GameDB) -> GameDB:
+    """
+    Updates an already stored game
+    :param db: database session
+    :param updated_game: game with new info
+    :return: game with new info updated
+    """
+
     _add_commit(db, updated_game)
 
     return updated_game

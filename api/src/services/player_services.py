@@ -13,7 +13,7 @@ def get_all_players(db: Session, skip: int = 0, limit: int = 100) -> List[Player
     :param db: database session
     :param skip: lower limit
     :param limit: max limit
-    :return: list of games
+    :return: list of players
     """
     return crud.get_players(db, skip, limit)
 
