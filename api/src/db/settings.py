@@ -1,0 +1,5 @@
+USER = 'postgres'
+PASSWORD = 'admin'
+SERVER = 'localhost'
+PORT = '5432'
+DATABASE = 'tictactoe'
