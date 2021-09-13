@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from api.src.db.database import get_db
 from api.src.entities.requests import GameRequest, SubmitPlay
-from api.src.entities.schemas import Player, Game, Play, PlayResponse
+from api.src.entities.schemas import Player, Game, PlayResponse
 from api.src.services import game_service, player_service
 
 router = APIRouter()
@@ -54,4 +54,3 @@ async def submit_play(submit_play: SubmitPlay, db: Session = Depends(get_db)):
 @router.get('/game-movements/{game_id}', response_model=List[PlayResponse], status_code=200)
 async def get_game_movements(game_id: int, db: Session = Depends(get_db)):
     return game_service.get_game_movements(db, game_id)
-

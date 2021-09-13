@@ -1,7 +1,7 @@
+from sqlalchemy import String, Column, Integer, CHAR, ForeignKey
 from sqlalchemy.orm import relationship
 
 from api.src.db.database import Base
-from sqlalchemy import String, Column, Integer, CHAR, ForeignKey
 
 
 class PlayerDB(Base):

@@ -1,5 +1,7 @@
 from typing import Optional, List
-from pydantic import BaseModel, PositiveInt, Field
+
+from pydantic import BaseModel, Field
+
 from api.src.entities.schemas import Player
 
 
