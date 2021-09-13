@@ -149,3 +149,13 @@ def update_game(db: Session, updated_game: GameDB) -> GameDB:
     _add_commit(db, updated_game)
 
     return updated_game
+
+
+def get_game_movements(db: Session, game_id: int) -> List[PlayDB]:
+    """
+    Returns a game's list of movements
+    :param db: database session
+    :param game_id: game the get movements
+    :return: list of movements
+    """
+    return db.query(PlayDB).filter(PlayDB.game_id == game_id).all()

@@ -30,3 +30,13 @@ class Play(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class PlayResponse(BaseModel):
+    game_id: int
+    player: Player
+    row: int
+    column: int
+
+    class Config:
+        orm_mode = True

@@ -5,9 +5,10 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from api.src.db import crud
+from api.src.db.models import PlayerDB
 from api.src.entities.requests import GameRequest, SubmitPlay
-from api.src.entities.schemas import Game, Play, Player
-from api.src.services import player_services
+from api.src.entities.schemas import Game, Play, Player, PlayResponse
+from api.src.services import player_service
 
 
 def get_all_games(db: Session, skip: int = 0, limit: int = 100) -> List[Game]:
@@ -52,7 +53,7 @@ def begin_game(db: Session, game_request: GameRequest) -> Game:
     :param game_request: game request with players, symbols and starting player
     :return: new game stored
     """
-    players = player_services.validate_symbol(game_request.players)
+    players = player_service.validate_symbol(game_request.players)
     players_names = [player.name for player in players]
     next_turn = game_request.starting_player if game_request.starting_player \
                                                 and game_request.starting_player in players_names else players_names[0]
@@ -71,7 +72,7 @@ def sumbit_play(db: Session, submit_play: SubmitPlay) -> Game:
     """
     game = get_game(db, submit_play.game_id)
     _submit_play_validations(game, submit_play)
-    player = player_services.get_player_by_name(db, submit_play.player_name)
+    player = player_service.get_player_by_name(db, submit_play.player_name)
     _new_play(db, game, submit_play, player)
     game.next_turn = _next_turn(game, player)
     if game.movements_played >= 5 and _check_winner(game):
@@ -112,7 +113,7 @@ def _board_play(board: str, symbol: str, row: int, column: int) -> str:
     return json.dumps(board)
 
 
-def _new_play(db: Session, game: Game, submit_play: SubmitPlay, player: Player):
+def _new_play(db: Session, game: Game, submit_play: SubmitPlay, player: PlayerDB):
     """
     Private function to creates and stores a new play and makes board movement
     :param db: database session
@@ -177,3 +178,25 @@ def _flatten(nested_list: list) -> list:
     :return: one dimension list
     """
     return [item for sublist in nested_list for item in sublist]
+
+
+def get_game_movements(db: Session, game_id) -> List[PlayResponse]:
+    """
+    Returns a game's list of movements
+    :param db: database session
+    :param game_id: game the get movements
+    :return: list of movements
+    :raises HTTPException: 404 if game hase no movements yet
+    """
+    movements = crud.get_game_movements(db, game_id)
+    if not movements:
+        raise HTTPException(status_code=404, detail="No movements found for {}".format(game_id))
+
+    for movement in movements:
+        player = player_service.get_player(db, movement.player_id)
+        movements[movements.index(movement)] = PlayResponse(game_id=movement.game_id,
+                                                            player=player,
+                                                            row=movement.row,
+                                                            column=movement.column)
+
+    return movements
