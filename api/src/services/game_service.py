@@ -53,6 +53,7 @@ def begin_game(db: Session, game_request: GameRequest) -> Game:
     :param game_request: game request with players, symbols and starting player
     :return: new game stored
     """
+    player_service.validate_players(game_request.players)
     players = player_service.validate_symbol(game_request.players)
     players_names = [player.name for player in players]
     next_turn = game_request.starting_player if game_request.starting_player \

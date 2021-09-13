@@ -56,14 +56,31 @@ def add_player(db: Session, new_player: Player) -> Player:
     return crud.create_player(db, new_player)
 
 
+def validate_players(players: List[Player]):
+    """
+    Validates players being only 2 and having different names
+    :param players: list of players
+    :raises HTTPException: 406
+    """
+    if len(players) != 2:
+        raise HTTPException(status_code=406, detail="Two players required")
+
+    if players[0].name == players[1].name:
+        raise HTTPException(status_code=406, detail="Players' names must be different")
+
+
 def validate_symbol(players: List[Player]) -> List[Player]:
     """
-    Assigns default players' symbols
+    Assigns default players' symbols and validates differences
     :param players: list of players
     :return: list of players with assigned symbols
+    :raises HTTPException: 406
     """
     symbols = ('X', 'O')
     for player in players:
         player.symbol = symbols[players.index(player)] if not player.symbol else player.symbol
+
+    if players[0].symbol.lower() == players[1].symbol.lower():
+        raise HTTPException(status_code=406, detail="Players' symbols must be different")
 
     return players
