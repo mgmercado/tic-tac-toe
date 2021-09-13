@@ -23,10 +23,10 @@ def get_all_games(db: Session, skip: int = 0, limit: int = 100) -> List[Game]:
 
 def get_game(db: Session, game_id: int) -> Game:
     """
-    Returns
+    Returns game with the requested id
     :param db: database session
     :param game_id: id of the game to find
-    :return: found game
+    :return: game found
     :raises HTTPException: 404 Game not found
     """
     game = crud.get_game(db, game_id)
