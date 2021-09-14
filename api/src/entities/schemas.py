@@ -12,6 +12,7 @@ class Player(BaseModel):
 
 
 class Game(BaseModel):
+    id: Optional[int] = None
     players: List[Player]
     movements_played: int
     next_turn: str

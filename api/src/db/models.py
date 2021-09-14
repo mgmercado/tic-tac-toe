@@ -1,4 +1,4 @@
-from sqlalchemy import String, Column, Integer, CHAR, ForeignKey
+from sqlalchemy import String, Column, Integer, CHAR, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
 from api.src.db.database import Base
@@ -22,6 +22,7 @@ class GameDB(Base):
     next_turn = Column(String(50))
     board = Column(String(255), nullable=False)
     winner = Column(String(50))
+    finished = Column(Boolean, nullable=False)
 
     players = relationship('PlayerDB')
     plays = relationship('PlayDB')

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -86,15 +86,18 @@ def create_player(db: Session, new_player: Player) -> PlayerDB:
     return _create_entity(db, new_player, PlayerDB)
 
 
-def create_game(db: Session, new_game: Game) -> GameDB:
+def create_game(db: Session, new_game: Game, finished) -> GameDB:
     """
     Stores a new game
     :param db: database session
     :param new_game: new game to store
+    :param finished: finished games
     :return: stored new game
     """
     new_game.players = [PlayerDB(**player.dict()) for player in new_game.players]
-    return _create_entity(db, new_game, GameDB)
+    new_game_db = GameDB(**new_game.dict(), finished=finished)
+    _add_commit(db, new_game_db)
+    return new_game_db
 
 
 def create_play(db: Session, new_play: Play) -> PlayDB:
@@ -117,15 +120,17 @@ def _add_commit(db: Session, entity_db: Base):
     db.commit()
 
 
-def get_games(db: Session, skip: int, limit: int) -> List[GameDB]:
+def get_games(db: Session, skip: int, limit: int, finished: Optional[bool] = None) -> List[GameDB]:
     """
     Returns all saved games from 0 to 100 by default
     :param db: database session
     :param skip: lower limit
     :param limit: max limit
     :return: list of games
+    :param finished: to filter finished games
     """
-    return _get_entities(db, GameDB, skip, limit)
+    filter_list = [GameDB.finished == finished] if finished is not None else []
+    return db.query(GameDB).filter(*filter_list).offset(skip).limit(limit).all()
 
 
 def get_game(db: Session, game_id: int) -> GameDB:
@@ -138,14 +143,15 @@ def get_game(db: Session, game_id: int) -> GameDB:
     return _get_entity(db, GameDB, game_id)
 
 
-def update_game(db: Session, updated_game: GameDB) -> GameDB:
+def update_game(db: Session, updated_game: GameDB, finished: bool) -> GameDB:
     """
     Updates an already stored game
     :param db: database session
     :param updated_game: game with new info
     :return: game with new info updated
+    :param finished: finished game
     """
-
+    updated_game.finished = finished
     _add_commit(db, updated_game)
 
     return updated_game

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, status, Depends
 from sqlalchemy.orm import Session
@@ -22,8 +22,9 @@ async def new_game(game_request: GameRequest, db: Session = Depends(get_db)):
 
 
 @router.get('/games', response_model=List[Game], status_code=200)
-async def get_all_games(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return game_service.get_all_games(db, skip, limit)
+async def get_all_games(skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
+                        finished: Optional[bool] = None):
+    return game_service.get_all_games(db, skip, limit, finished)
 
 
 @router.get('/game/{game_id}')

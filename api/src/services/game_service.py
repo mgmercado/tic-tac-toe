@@ -11,15 +11,16 @@ from api.src.entities.schemas import Game, Play, Player, PlayResponse
 from api.src.services import player_service
 
 
-def get_all_games(db: Session, skip: int = 0, limit: int = 100) -> List[Game]:
+def get_all_games(db: Session, skip: int = 0, limit: int = 100, finished: Optional[bool] = None) -> List[Game]:
     """
     Returns all saved games from 0 to 100 by default
     :param db: database session
     :param skip: lower limit
     :param limit: max limit
+    :param finished: filter by finished games
     :return: list of games
     """
-    return crud.get_games(db, skip, limit)
+    return crud.get_games(db, skip, limit, finished)
 
 
 def get_game(db: Session, game_id: int) -> Game:
@@ -36,14 +37,15 @@ def get_game(db: Session, game_id: int) -> Game:
     return game
 
 
-def _create_game(db: Session, new_game: Game) -> Game:
+def _create_game(db: Session, new_game: Game, finished: bool) -> Game:
     """
     Private function to store a new game
     :param db: database session
     :param new_game: new game to be stored
+    :param finished: finished games
     :return: new game stored
     """
-    return crud.create_game(db, new_game)
+    return crud.create_game(db, new_game, finished)
 
 
 def begin_game(db: Session, game_request: GameRequest) -> Game:
@@ -61,7 +63,8 @@ def begin_game(db: Session, game_request: GameRequest) -> Game:
     new_game = Game(**{'players': players,
                        'movements_played': 0,
                        'next_turn': next_turn})
-    return _create_game(db, new_game)
+    finished = False
+    return _create_game(db, new_game, finished)
 
 
 def sumbit_play(db: Session, submit_play: SubmitPlay) -> Game:
@@ -76,10 +79,13 @@ def sumbit_play(db: Session, submit_play: SubmitPlay) -> Game:
     player = player_service.get_player_by_name(db, submit_play.player_name)
     _new_play(db, game, submit_play, player)
     game.next_turn = _next_turn(game, player)
+
+    finished = True if game.movements_played is 9 else False
     if game.movements_played >= 5 and _check_winner(game):
         game.winner = _check_winner(game)
+        finished = True
 
-    return crud.update_game(db, game)
+    return crud.update_game(db, game, finished)
 
 
 def _submit_play_validations(game: Game, submit_play: SubmitPlay):
