@@ -19,16 +19,20 @@ def _get_entity(db: Session, model: Base, entity_id: int) -> Base:
     return db.query(model).filter(model.id == entity_id).first()
 
 
-def _get_entities(db: Session, model: Base, skip: int, limit: int) -> List[Base]:
+def _get_entities(db: Session, model: Base, skip: int, limit: int, filters=None) -> List[Base]:
     """
     Private function to encapsulate get entities' logic
     :param db: database session
     :param model: database model to cast
     :param skip: lower limit
     :param limit: max limit
+    :param filters: filters to apply
     :return: list of entities
     """
-    return db.query(model).offset(skip).limit(limit).all()
+
+    if filters is None:
+        filters = []
+    return db.query(model).filter(*filters).offset(skip).limit(limit).all()
 
 
 def _create_entity(db: Session, new_entity: BaseModel, model: Base) -> Base:
@@ -129,8 +133,8 @@ def get_games(db: Session, skip: int, limit: int, finished: Optional[bool] = Non
     :return: list of games
     :param finished: to filter finished games
     """
-    filter_list = [GameDB.finished == finished] if finished is not None else []
-    return db.query(GameDB).filter(*filter_list).offset(skip).limit(limit).all()
+    filters = [GameDB.finished == finished] if finished is not None else None
+    return _get_entities(db, GameDB, skip, limit, filters)
 
 
 def get_game(db: Session, game_id: int) -> GameDB:
