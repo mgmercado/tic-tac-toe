@@ -39,4 +39,4 @@ It consists on a complete API that allows you to play Tic-Tac-Toe game. Technolo
 2. Run the project:
     - Pycharm: Uvicorn is included in app.py class. Running app.py should make it work
     - Uvicorn: In terminal by sending the command: `uvicorn api.app:app --reload`
-    - Python: Replace every `api.src` with `src`. Then execute `python3 api/app.py
+    - Python: Replace every `api.src` with `src`. Then execute `python3 api/app.py`
