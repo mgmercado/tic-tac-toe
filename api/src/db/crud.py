@@ -90,7 +90,7 @@ def create_player(db: Session, new_player: Player) -> PlayerDB:
     return _create_entity(db, new_player, PlayerDB)
 
 
-def create_game(db: Session, new_game: Game, finished) -> GameDB:
+def create_game(db: Session, new_game: Game, finished: bool) -> GameDB:
     """
     Stores a new game
     :param db: database session
