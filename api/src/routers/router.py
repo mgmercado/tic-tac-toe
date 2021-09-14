@@ -16,7 +16,7 @@ async def ping() -> dict:
     return {'message': 'pong!'}
 
 
-@router.post('/new-game', response_model=Game)
+@router.post('/new-game', response_model=Game, status_code=201)
 async def new_game(game_request: GameRequest, db: Session = Depends(get_db)):
     return game_service.begin_game(db, game_request)
 
@@ -27,9 +27,24 @@ async def get_all_games(skip: int = 0, limit: int = 100, db: Session = Depends(g
     return game_service.get_all_games(db, skip, limit, finished)
 
 
-@router.get('/game/{game_id}')
+@router.get('/game/{game_id}', response_model=Game, status_code=200)
 async def get_game(game_id: int, db: Session = Depends(get_db)):
     return game_service.get_game(db, game_id)
+
+
+@router.post('/submit-play', response_model=Game, status_code=201)
+async def submit_play(submit_play: SubmitPlay, db: Session = Depends(get_db)):
+    return game_service.sumbit_play(db, submit_play)
+
+
+@router.get('/game-movements/{game_id}', response_model=List[PlayResponse], status_code=200)
+async def get_game_movements(game_id: int, db: Session = Depends(get_db)):
+    return game_service.get_game_movements(db, game_id)
+
+
+@router.delete('/game/{game_id}', response_model=Game, status_code=200)
+async def delete_game(game_id: int, db: Session = Depends(get_db)):
+    return game_service.delete_game(db, game_id)
 
 
 @router.get('/players', response_model=List[Player], status_code=200)
@@ -45,13 +60,3 @@ async def get_player(player_id: int, db: Session = Depends(get_db)):
 @router.post('/player', response_model=Player, status_code=status.HTTP_201_CREATED)
 async def create_player(player: Player, db: Session = Depends(get_db)):
     return player_service.add_player(db, player)
-
-
-@router.post('/submit-play', response_model=Game, status_code=200)
-async def submit_play(submit_play: SubmitPlay, db: Session = Depends(get_db)):
-    return game_service.sumbit_play(db, submit_play)
-
-
-@router.get('/game-movements/{game_id}', response_model=List[PlayResponse], status_code=200)
-async def get_game_movements(game_id: int, db: Session = Depends(get_db)):
-    return game_service.get_game_movements(db, game_id)

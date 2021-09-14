@@ -37,6 +37,17 @@ def get_game(db: Session, game_id: int) -> Game:
     return game
 
 
+def delete_game(db: Session, game_id: int) -> Game:
+    """
+    Delete a Game
+    :param db: database session
+    :param game_id: game id to be deleted
+    :return: deleted game
+    """
+    game = get_game(db, game_id)
+    return crud.delete_game(db, game)
+
+
 def _create_game(db: Session, new_game: Game, finished: bool) -> Game:
     """
     Private function to store a new game

@@ -169,3 +169,25 @@ def get_game_movements(db: Session, game_id: int) -> List[PlayDB]:
     :return: list of movements
     """
     return db.query(PlayDB).filter(PlayDB.game_id == game_id).all()
+
+
+def delete_game(db: Session, game: Game) -> GameDB:
+    """
+    Delete a Game
+    :param db: database session
+    :param game: game to be deleted
+    :return: deleted game
+    """
+    return _delete_entity(db, game)
+
+
+def _delete_entity(db: Session, entity: BaseModel) -> Base:
+    """
+    Private method to delete an entity
+    :param db: database session
+    :param entity: entity to be deleted
+    :return: deleted entity
+    """
+    db.delete(entity)
+    db.commit()
+    return entity
