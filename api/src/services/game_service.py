@@ -91,7 +91,7 @@ def sumbit_play(db: Session, submit_play: SubmitPlay) -> Game:
     _new_play(db, game, submit_play, player)
     game.next_turn = _next_turn(game, player)
 
-    finished = True if game.movements_played is 9 else False
+    finished = True if game.movements_played == 9 else False
     if game.movements_played >= 5 and _check_winner(game):
         game.winner = _check_winner(game)
         finished = True
@@ -106,7 +106,7 @@ def _submit_play_validations(game: Game, submit_play: SubmitPlay):
     :param submit_play: new play request
     :raises HTTPException: 406 with each case's message
     """
-    if game.winner or game.movements_played is 9:
+    if game.winner or game.movements_played == 9:
         raise HTTPException(status_code=406, detail="Game Finished")
 
     if game.next_turn != submit_play.player_name:
@@ -169,21 +169,14 @@ def _check_winner(game: Game) -> Optional[str]:
     flatboard = _flatten(board)
 
     for player in game.players:
-        if flatboard[0] == flatboard[1] == flatboard[2] == player.symbol:
-            return player.name
-        if flatboard[0] == flatboard[3] == flatboard[6] == player.symbol:
-            return player.name
-        if flatboard[0] == flatboard[4] == flatboard[8] == player.symbol:
-            return player.name
-        if flatboard[1] == flatboard[4] == flatboard[7] == player.symbol:
-            return player.name
-        if flatboard[2] == flatboard[4] == flatboard[6] == player.symbol:
-            return player.name
-        if flatboard[2] == flatboard[5] == flatboard[8] == player.symbol:
-            return player.name
-        if flatboard[3] == flatboard[4] == flatboard[5] == player.symbol:
-            return player.name
-        if flatboard[6] == flatboard[7] == flatboard[8] == player.symbol:
+        if flatboard[0] == flatboard[1] == flatboard[2] == player.symbol or \
+                flatboard[0] == flatboard[3] == flatboard[6] == player.symbol or \
+                flatboard[0] == flatboard[4] == flatboard[8] == player.symbol or \
+                flatboard[1] == flatboard[4] == flatboard[7] == player.symbol or \
+                flatboard[2] == flatboard[4] == flatboard[6] == player.symbol or \
+                flatboard[2] == flatboard[5] == flatboard[8] == player.symbol or \
+                flatboard[3] == flatboard[4] == flatboard[5] == player.symbol or \
+                flatboard[6] == flatboard[7] == flatboard[8] == player.symbol:
             return player.name
 
     return None
