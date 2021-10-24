@@ -30,8 +30,6 @@ def _get_entities(db: Session, model: Base, skip: int, limit: int, filters=None)
     :return: list of entities
     """
 
-    if filters is None:
-        filters = []
     return db.query(model).filter(*filters).offset(skip).limit(limit).all()
 
 
@@ -133,7 +131,7 @@ def get_games(db: Session, skip: int, limit: int, finished: Optional[bool] = Non
     :return: list of games
     :param finished: to filter finished games
     """
-    filters = [GameDB.finished == finished] if finished is not None else None
+    filters = [GameDB.finished == finished] if finished is not None else ()
     return _get_entities(db, GameDB, skip, limit, filters)
 
 
