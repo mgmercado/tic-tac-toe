@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-load_dotenv(find_dotenv())
+load_dotenv('database.env')
 SQLALCHEMY_DATABASE_URL = "postgresql+psycopg2://{user}:{password}@{server}:{port}/{db}".format(
     user=os.getenv('USER_DB'),
     password=os.getenv("PASSWORD"),

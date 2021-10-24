@@ -40,3 +40,14 @@ It consists on a complete API that allows you to play Tic-Tac-Toe game. Technolo
     - Pycharm: Uvicorn is included in app.py class. Running app.py should make it work
     - Uvicorn: In terminal by sending the command: `uvicorn api.app:app --reload`
     - Python: Replace every `api.src` with `src`. Then execute `python3 api/app.py`
+
+3. Docker
+   - To run with docker-compose, changes are needed in the code
+   - Replace inside `database.py` lines `10-14` with the next snippet
+   ```
+   user = 'postgres',
+   password = 'admin',
+   server = 'localhost',
+   port = '5432',
+   db = 'db')
+   ```
