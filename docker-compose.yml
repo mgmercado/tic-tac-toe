@@ -16,6 +16,12 @@ services:
   web:
     build: api
     command: uvicorn api.app:app --host 0.0.0.0 --reload
+    environment:
+      - USER_DB=postgres
+      - PASSWORD=admin
+      - SERVER=db
+      - PORT=5432
+      - DATABASE=tictactoe
     ports:
       - "8000:8000"
     volumes:
