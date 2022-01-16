@@ -92,8 +92,9 @@ def sumbit_play(db: Session, submit_play: SubmitPlay) -> Game:
     game.next_turn = _next_turn(game, player)
 
     finished = True if game.movements_played == 9 else False
-    if game.movements_played >= 5 and _check_winner(game):
-        game.winner = _check_winner(game)
+    winner = _check_winner(game)
+    if game.movements_played >= 5 and winner:
+        game.winner = winner
         finished = True
 
     return crud.update_game(db, game, finished)

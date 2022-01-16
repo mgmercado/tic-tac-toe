@@ -1,7 +1,12 @@
-from sqlalchemy import String, Column, Integer, CHAR, ForeignKey, Boolean
+from sqlalchemy import String, Column, Integer, CHAR, ForeignKey, Boolean, Table
 from sqlalchemy.orm import relationship
 
 from api.src.db.database import Base
+
+player_game = Table('player_game', Base.metadata,
+                    Column('player_id', ForeignKey('player.id'), primary_key=True),
+                    Column('game_id', ForeignKey('game.id'), primary_key=True)
+                    )
 
 
 class PlayerDB(Base):
@@ -10,8 +15,8 @@ class PlayerDB(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
     symbol = Column(CHAR, nullable=False)
-    game_id = Column(Integer, ForeignKey('game.id'))
 
+    games = relationship('GameDB', cascade='all,delete', secondary=player_game, back_populates='players')
     plays = relationship('PlayDB')
 
 
@@ -24,7 +29,7 @@ class GameDB(Base):
     winner = Column(String(50))
     finished = Column(Boolean, nullable=False)
 
-    players = relationship('PlayerDB')
+    players = relationship('PlayerDB', cascade='all,delete', secondary=player_game, back_populates='games')
     plays = relationship('PlayDB')
 
 
