@@ -96,7 +96,8 @@ def create_game(db: Session, new_game: Game, finished: bool) -> GameDB:
     :param finished: finished games
     :return: stored new game
     """
-    new_game.players = [PlayerDB(**player.dict()) for player in new_game.players]
+    new_game.players = [get_player_by_name(db, player.name) if get_player_by_name(db, player.name)
+                        else PlayerDB(**player.dict()) for player in new_game.players]
     new_game_db = GameDB(**new_game.dict(), finished=finished)
     _add_commit(db, new_game_db)
     return new_game_db
