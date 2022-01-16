@@ -45,9 +45,9 @@ It consists on a complete API that allows you to play Tic-Tac-Toe game. Technolo
    - To run with docker-compose, changes are needed in the code
    - Replace inside `database.py` lines `10-14` with the next snippet
    ```
-   user = 'postgres',
-   password = 'admin',
-   server = 'localhost',
-   port = '5432',
-   db = 'db')
+    user='postgres',
+    password='admin',
+    server='db',
+    port='5432',
+    db='tictactoe')
    ```
