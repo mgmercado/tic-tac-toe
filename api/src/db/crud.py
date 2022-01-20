@@ -13,7 +13,6 @@ class Crud(AppCRUD):
     def _get_entity(self, model: Base, entity_id: int) -> Base:
         """
         Private function to encapsulate get entity's logic
-        :param db: database session
         :param model: database model to cast
         :param entity_id: entity's id to look
         :return: entity found
@@ -23,7 +22,6 @@ class Crud(AppCRUD):
     def _get_entities(self, model: Base, skip: int, limit: int, filters=None) -> List[Base]:
         """
         Private function to encapsulate get entities' logic
-        :param db: database session
         :param model: database model to cast
         :param skip: lower limit
         :param limit: max limit
@@ -36,7 +34,6 @@ class Crud(AppCRUD):
     def _create_entity(self, new_entity: BaseModel, model: Base) -> Base:
         """
         Private function to encapsulate entities storage
-        :param db: database session
         :param new_entity: new entity to store
         :param model: entity's model to cast
         :return: stored entity
@@ -49,7 +46,6 @@ class Crud(AppCRUD):
     def get_player(self, player_id: int) -> PlayerDB:
         """
         Get player from database by id
-        :param db: database session
         :param player_id: player's id to get
         :return: player found
         """
@@ -58,7 +54,6 @@ class Crud(AppCRUD):
     def get_player_by_name(self, name: str) -> PlayerDB:
         """
         Get player from database by name
-        :param db: database session
         :param name: player's name to get
         :return: player found
         """
@@ -67,7 +62,6 @@ class Crud(AppCRUD):
     def get_players(self, skip: int = 0, limit: int = 100) -> List[PlayerDB]:
         """
         Returns all saved players from 0 to 100 by default
-        :param db: database session
         :param skip: lower limit
         :param limit: max limit
         :return: list of players
@@ -77,7 +71,6 @@ class Crud(AppCRUD):
     def create_player(self, new_player: Player) -> PlayerDB:
         """
         Stores a new player
-        :param db: database session
         :param new_player: new player to store
         :return: stored new player
         """
@@ -86,7 +79,6 @@ class Crud(AppCRUD):
     def create_game(self, new_game: Game, finished: bool) -> GameDB:
         """
         Stores a new game
-        :param db: database session
         :param new_game: new game to store
         :param finished: finished games
         :return: stored new game
@@ -100,7 +92,6 @@ class Crud(AppCRUD):
     def create_play(self, new_play: Play) -> PlayDB:
         """
         Stores a new play
-        :param db: database session
         :param new_play: new play to store
         :return: stored new play
         """
@@ -109,7 +100,6 @@ class Crud(AppCRUD):
     def _add_commit(self, entity_db: Base):
         """
         Private function to encapsulate database add and commit
-        :param db: database session
         :param entity_db: entity to be stored
         """
         self._db.add(entity_db)
@@ -118,7 +108,6 @@ class Crud(AppCRUD):
     def get_games(self, skip: int, limit: int, finished: Optional[bool] = None) -> List[GameDB]:
         """
         Returns all saved games from 0 to 100 by default
-        :param db: database session
         :param skip: lower limit
         :param limit: max limit
         :return: list of games
@@ -130,7 +119,6 @@ class Crud(AppCRUD):
     def get_game(self, game_id: int) -> GameDB:
         """
         Returns game with the requested id
-        :param db: database session
         :param game_id: id of the game to find
         :return: game found
         """
@@ -139,7 +127,6 @@ class Crud(AppCRUD):
     def update_game(self, updated_game: GameDB, finished: bool) -> GameDB:
         """
         Updates an already stored game
-        :param db: database session
         :param updated_game: game with new info
         :return: game with new info updated
         :param finished: finished game
@@ -152,7 +139,6 @@ class Crud(AppCRUD):
     def get_game_movements(self, game_id: int) -> List[PlayDB]:
         """
         Returns a game's list of movements
-        :param db: database session
         :param game_id: game the get movements
         :return: list of movements
         """
@@ -161,7 +147,6 @@ class Crud(AppCRUD):
     def delete_game(self, game: Game) -> GameDB:
         """
         Delete a Game
-        :param db: database session
         :param game: game to be deleted
         :return: deleted game
         """
@@ -170,7 +155,6 @@ class Crud(AppCRUD):
     def _delete_entity(self, entity: BaseModel) -> Base:
         """
         Private method to delete an entity
-        :param db: database session
         :param entity: entity to be deleted
         :return: deleted entity
         """

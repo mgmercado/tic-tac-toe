@@ -22,7 +22,6 @@ class GameService(AppService):
         Game]:
         """
         Returns all saved games from 0 to 100 by default
-        :param db: database session
         :param skip: lower limit
         :param limit: max limit
         :param finished: filter by finished games
@@ -33,7 +32,6 @@ class GameService(AppService):
     def get_game(self, game_id: int) -> Game:
         """
         Returns game with the requested id
-        :param db: database session
         :param game_id: id of the game to find
         :return: game found
         :raises HTTPException: 404 Game not found
@@ -46,7 +44,6 @@ class GameService(AppService):
     def delete_game(self, game_id: int) -> Game:
         """
         Delete a Game
-        :param db: database session
         :param game_id: game id to be deleted
         :return: deleted game
         """
@@ -56,7 +53,6 @@ class GameService(AppService):
     def _create_game(self, new_game: Game, finished: bool) -> Game:
         """
         Private function to store a new game
-        :param db: database session
         :param new_game: new game to be stored
         :param finished: finished games
         :return: new game stored
@@ -66,7 +62,6 @@ class GameService(AppService):
     def begin_game(self, game_request: GameRequest) -> Game:
         """
         Set game's default attributes to begin a new game
-        :param db: database session
         :param game_request: game request with players, symbols and starting player
         :return: new game stored
         """
@@ -85,7 +80,6 @@ class GameService(AppService):
     def submit_play(self, submit_play: SubmitPlay) -> Game:
         """
         Creates a new play and updates current game being played
-        :param db: database session
         :param submit_play: new play request
         :return: updated game stored
         """
@@ -136,7 +130,6 @@ class GameService(AppService):
     def _new_play(self, game: Game, submit_play: SubmitPlay, player: PlayerDB):
         """
         Private function to creates and stores a new play and makes board movement
-        :param db: database session
         :param game: current game
         :param submit_play: new play request
         :param player: current player making the move
@@ -192,7 +185,6 @@ class GameService(AppService):
     def get_game_movements(self, game_id) -> List[PlayResponse]:
         """
         Returns a game's list of movements
-        :param db: database session
         :param game_id: game the get movements
         :return: list of movements
         :raises HTTPException: 404 if game hase no movements yet

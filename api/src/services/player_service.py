@@ -16,7 +16,6 @@ class PlayerService(AppService):
     def get_all_players(self, skip: int = 0, limit: int = 100) -> List[Player]:
         """
         Returns all saved players from 0 to 100 by default
-        :param db: database session
         :param skip: lower limit
         :param limit: max limit
         :return: list of players
@@ -26,7 +25,6 @@ class PlayerService(AppService):
     def get_player(self, player_id: int) -> Player:
         """
         Returns player with the requested id
-        :param db: database session
         :param player_id: id of the game to find
         :return: found game
         :raises HTTPException: 404 Player not found
@@ -39,7 +37,6 @@ class PlayerService(AppService):
     def get_player_by_name(self, player_name: str) -> Player:
         """
         Returns player the first player with the requested name
-        :param db: database session
         :param player_name: name of the game to find
         :return: player found
         :raises HTTPException: 404 Player not found
@@ -52,7 +49,6 @@ class PlayerService(AppService):
     def add_player(self, new_player: Player) -> Player:
         """
         Creates and stores a new player
-        :param db: database session
         :param new_player: new player to store
         :return: stored new player
         """
